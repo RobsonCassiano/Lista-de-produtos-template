@@ -92,3 +92,106 @@ const listaProdutos = [
     "classificacao": 4
   }
 ]
+
+const containerProdutos = document.getElementById('listaProdutos')
+
+function corrigirTexto(texto) {
+  try {
+    return decodeURIComponent(escape(texto))
+  } catch {
+    return texto
+  }
+}
+
+function formatarPreco(preco) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(preco)
+}
+
+function criarEstrelas(classificacao) {
+  let estrelas = ''
+
+  for (let estrela = 1; estrela <= 5; estrela += 1) {
+    estrelas += estrela <= classificacao ? '★' : '☆'
+  }
+
+  return estrelas
+}
+
+function criarCardProduto(produto) {
+  const card = document.createElement('article')
+  const categoria = corrigirTexto(produto.categoria)
+  const nome = corrigirTexto(produto.nome)
+  const descricao = corrigirTexto(produto.descricao)
+  const precoParcelado = produto.preco / 10
+  const imagemContainer = document.createElement('figure')
+  const badge = document.createElement('p')
+  const imagem = document.createElement('img')
+  const corpo = document.createElement('section')
+  const cabecalho = document.createElement('header')
+  const avaliacao = document.createElement('p')
+  const estrelas = document.createElement('p')
+  const nota = document.createElement('p')
+  const titulo = document.createElement('h3')
+  const descricaoTexto = document.createElement('p')
+  const preco = document.createElement('p')
+  const parcelado = document.createElement('p')
+  const rodape = document.createElement('footer')
+  const frete = document.createElement('p')
+  const botao = document.createElement('button')
+
+  card.className = 'produto-card'
+
+  imagemContainer.className = 'produto-card__imagem'
+  badge.className = 'produto-card__badge'
+  badge.textContent = categoria
+  if (produto.id === 6) {
+    imagem.classList.add('produto-card__img--blend')
+  }
+  imagem.src = `./img/${produto.imagem}`
+  imagem.alt = nome
+  imagemContainer.append(badge, imagem)
+
+  corpo.className = 'produto-card__corpo'
+  cabecalho.className = 'produto-card__cabecalho'
+
+  avaliacao.className = 'produto-card__avaliacao'
+  estrelas.className = 'produto-card__estrelas'
+  estrelas.textContent = criarEstrelas(produto.classificacao)
+  nota.textContent = `${produto.classificacao.toFixed(1)} de 5`
+  avaliacao.append(estrelas, nota)
+
+  titulo.textContent = nome
+  cabecalho.append(avaliacao, titulo)
+
+  descricaoTexto.className = 'produto-card__descricao'
+  descricaoTexto.textContent = descricao
+
+  preco.className = 'produto-card__preco'
+  preco.textContent = formatarPreco(produto.preco)
+
+  parcelado.className = 'produto-card__parcelado'
+  parcelado.textContent = `ou 10x de ${formatarPreco(precoParcelado)} sem juros`
+
+  rodape.className = 'produto-card__rodape'
+  frete.className = 'produto-card__frete'
+  frete.textContent = 'Frete rapido para todo o Brasil'
+  botao.className = 'produto-card__botao'
+  botao.type = 'button'
+  botao.textContent = 'Comprar agora'
+  rodape.append(frete, botao)
+
+  corpo.append(cabecalho, descricaoTexto, preco, parcelado, rodape)
+  card.append(imagemContainer, corpo)
+
+  return card
+}
+
+function renderizarProdutos() {
+  const cards = listaProdutos.map(criarCardProduto)
+  containerProdutos.replaceChildren(...cards)
+}
+
+renderizarProdutos()
